@@ -1,0 +1,3 @@
+This is the directory where device library modules will be compiled for linux
+This is where msg_dev would be compiled if it wasn't part of the controller
+module.

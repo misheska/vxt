@@ -1,0 +1,12 @@
+LIBRARY vxtmsg_mux
+
+EXPORTS
+    mux_lib_init
+	mux_connect
+	mux_read
+	mux_write
+	mux_accept
+	mux_connect_cleanup
+	mux_enable_tracing
+
+

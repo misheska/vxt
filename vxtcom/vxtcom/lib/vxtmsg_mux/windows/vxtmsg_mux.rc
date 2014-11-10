@@ -1,0 +1,6 @@
+#define BF_FILETYPE         VFT_APP
+#define SZ_FILEDESCRIPTION  "XDC vxtmsg_mux"
+#define SZ_ORIGINALFILENAME "vxtmsg_mux.dll"
+#define SZ_INTERNALNAME     "Vxtmsg_mux.dll"
+
+#include <verstamp.inc>

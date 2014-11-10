@@ -1,0 +1,87 @@
+VXT_BUILD:  Run from DOM0
+
+
+The VXT_BUILD is a collection of setup and script actions that allow a 
+virtual machine platform to build the various VxT linux guests and
+the linux rpm for the control domain.
+
+
+In order to properly build the VxT rpm, the target guest build machine
+must be set to acquire the targeted source and to place the resulting rpm
+in the proper temporary repository.  This is done through a mounted file system.
+
+
+On the guest:
+
+   1:  Place the following line in the /etc/fstab
+
+	10.182.97.123:/build/youngwor /build/youngwor nfs soft,rw,suid 0 0
+
+   The address is of the murphys server.  NOTE: the need for mounted NFS
+   servers requires that the guest have a working IP port and a gateway
+   to connect to the needed server.  
+
+   2:  Set a link for ARCHIVE_DIR at the root.  NOTE:  This is customized
+   for each guest depending on what is being built.  In the case of SLES 10
+   32 bit service pack 2, (sles10 sp2 32), set the following link:
+
+	ln -s /build/youngwor/shadow_archive/vxt/bin/xen-i686/1.1-Orlando-RC4-yyy-mm-dda/linux/sles10/sp2/32 ARCHIVE_DIR
+
+
+   3:  We use VxT as the communication link in directing the build from
+   domain 0.  Therefore it is necessary to start VxT as part of boot and
+   to start the VxT RSH server.  To do this:
+
+	a: install the appropriate VxT rpm on the guest
+
+	b: build a vxt_rsh_server and place it in /etc/vxtcom/bin
+	(this is not part of the base rpm package)
+
+	c: In the /etc/init.d/vxtcom_boot module, add the following
+	to the end of the file. 
+		# Install the vxt linux vxt_rsh_server 
+
+		if [ -f /etc/vxtcom/bin/vxt_rsh_server ]
+		then
+       		/etc/vxtcom/bin/vxt_rsh_server -d
+		fi
+
+
+	NOTE::::::  vxt_rsh_server is an example program and does not
+	have synchronization code for controller start-up.  Because of
+	this a delay may need to be inserted before calling vxt_rsh_server
+	this is done by embedding the invocation in a shell script i.e.
+
+	sleep 10
+	/etc/vxtcom/bin/vxt_rsh_server
+
+	and then calling the shell script instead of the server from
+	vxtcom_boot module
+
+
+	This may need to be done until the vxt_rsh_server can be updated.
+
+
+
+On Domain 0 we will run the "archive_script" script.  This script has an entry for each build guest.  The entry has to be customized with the uuid of that guest.  Also, the sles guests require their own version of the "commands" file.
+
+Domain 0 will also require an entry in the authorization database to allow
+a vxt_rsh device to be instantiated for each guest.  If the guest uuid is
+86dea17f-60c4-4320-7417-de68ab92a511, the command will be:
+
+
+	/etc/vxtcom/bin/vxt_auth -a -c 86dea17f-60c4-4320-7417-de68ab92a511 -d VXT_RSH_ -l 8
+
+
+
+
+On Domain 0:
+
+	1:  Create an entry for each guest in the "archive_script" file
+	Make sure to use the SLES commands file for sles guests
+
+	2:  Create an authorization entry in the database for each guest
+
+
+
+After setting up archive_script, run the buildit script to execute a weekly cycle of cascading builds.

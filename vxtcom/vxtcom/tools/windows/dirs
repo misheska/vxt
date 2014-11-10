@@ -1,0 +1,7 @@
+DIRS=vxttrace \
+     vxtscan \
+     vxtdump \
+     vxtauth \
+     vxtdbread
+
+

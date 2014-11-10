@@ -1,0 +1,34 @@
+TARGETNAME=serv_test_file
+TARGETPATH=obj
+TARGETTYPE=PROGRAM
+UMTYPE=  console
+
+USE_CRTDLL= 1
+
+
+TARGETLIBS = \
+    $(BASEDIR)\public\sdk\lib\*\kernel32.lib \
+    $(BASEDIR)\public\sdk\lib\*\advapi32.lib \
+    $(BASEDIR)\public\sdk\lib\*\user32.lib \
+    $(BASEDIR)\public\sdk\lib\*\ntdll.lib \
+    $(BASEDIR)\public\sdk\lib\*\ole32.lib \
+    $(BASEDIR)\public\sdk\lib\ws2_32.lib \
+    $(BASEDIR)\public\sdk\lib\*\msvcrt.lib
+    
+    
+INCLUDES = ..\..\common; \
+	   ..\..\windows; \
+	   ..\..\..\..\
+
+           
+
+MSC_WARNING_LEVEL=/W0
+
+SOURCES=\
+	serv_test_file.c \
+	getopt.c
+        
+
+C_DEFINES = /MT /Od /W3 /I"." /D"WIN32" /D"_DEBUG" /D"_CONSOLE" /D"_WINNT" /D"VXT_ENDPOINT" /D"_MBCS" /Gm  /MLd  /W3 /nologo /c /Wp64  /TC
+
+

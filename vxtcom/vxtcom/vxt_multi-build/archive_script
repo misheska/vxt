@@ -1,0 +1,319 @@
+# Copyright (c) 2010, Symantec Corporation
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+#
+# Redistributions of source code must retain the above copyright
+# notice, this list of conditions and the following disclaimer.
+#
+# Redistributions in binary form must reproduce the above copyright
+# notice, this list of conditions and the following disclaimer in
+# the documentation and/or other materials provided with the
+# distribution.
+#
+# Neither the name of Symantec Corporation nor the names of its
+# contributors may be used to endorse or promote products derived
+# from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+# COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+# ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+#
+
+# Build RedHat 5.2 64 bit
+
+
+xe vm-start uuid=20f3c059-a3a2-d70a-fc4d-2f49335e4837
+
+
+
+builder=`xenstore-read /vm/20f3c059-a3a2-d70a-fc4d-2f49335e4837/name`
+
+echo $builder
+
+DOMAIN_NUMBER=`echo $builder | sed 's\Domain-\\\'`
+
+./vxt_rsh -I commands $DOMAIN_NUMBER > RedHat_5.2_64_archive1
+if [ $? -ne 0 ]
+then
+	echo "Suffered race between device config call and xenstore bus config"
+	echo "Clean-up vxtcom guest controller and try again"
+	/etc/vxtcom/bin/vxtcom-clean-domain $builder
+	sleep 4
+	/etc/vxtcom/bin/vxtcom-setup-domain $builder
+	sleep 4
+	./vxt_rsh -I commands $DOMAIN_NUMBER > RedHat_5.2_64_archive1
+fi
+
+xe vm-shutdown uuid=20f3c059-a3a2-d70a-fc4d-2f49335e4837
+
+
+
+
+
+
+# Build RedHat 5.2 32 bit
+
+
+xe vm-start uuid=bcc42166-2cd1-0299-54ed-33ef55c1da1d
+
+
+
+builder=`xenstore-read /vm/bcc42166-2cd1-0299-54ed-33ef55c1da1d/name`
+
+echo $builder
+
+DOMAIN_NUMBER=`echo $builder | sed 's\Domain-\\\'`
+
+./vxt_rsh -I commands $DOMAIN_NUMBER > RedHat_5.2_32_archive1
+if [ $? -ne 0 ]
+then
+	echo "Suffered race between device config call and xenstore bus config"
+	echo "Clean-up vxtcom guest controller and try again"
+	/etc/vxtcom/bin/vxtcom-clean-domain $builder
+	sleep 4
+	/etc/vxtcom/bin/vxtcom-setup-domain $builder
+	sleep 4
+	./vxt_rsh -I commands $DOMAIN_NUMBER > RedHat_5.2_32_archive1
+fi
+
+
+xe vm-shutdown uuid=bcc42166-2cd1-0299-54ed-33ef55c1da1d
+
+
+
+
+
+
+
+
+# Build RedHat 5.1 64 bit
+
+
+xe vm-start uuid=e474f639-126e-c5e3-9b97-b4b6dc8eb425
+
+
+
+builder=`xenstore-read /vm/e474f639-126e-c5e3-9b97-b4b6dc8eb425/name`
+
+echo $builder
+
+DOMAIN_NUMBER=`echo $builder | sed 's\Domain-\\\'`
+
+./vxt_rsh -I commands $DOMAIN_NUMBER > RedHat_5.1_64_archive1
+if [ $? -ne 0 ]
+then
+	echo "Suffered race between device config call and xenstore bus config"
+	echo "Clean-up vxtcom guest controller and try again"
+	/etc/vxtcom/bin/vxtcom-clean-domain $builder
+	sleep 4
+	/etc/vxtcom/bin/vxtcom-setup-domain $builder
+	sleep 4
+	./vxt_rsh -I commands $DOMAIN_NUMBER > RedHat_5.1_64_archive1
+fi
+
+
+xe vm-shutdown uuid=e474f639-126e-c5e3-9b97-b4b6dc8eb425
+
+
+
+
+
+
+
+
+
+# Build RedHat 5.1 32 bit
+
+
+xe vm-start uuid=97cee7bf-c1a4-d317-8ed7-3fa52d4e902a
+
+
+
+builder=`xenstore-read /vm/97cee7bf-c1a4-d317-8ed7-3fa52d4e902a/name`
+
+echo $builder
+
+DOMAIN_NUMBER=`echo $builder | sed 's\Domain-\\\'`
+
+./vxt_rsh -I commands $DOMAIN_NUMBER > RedHat_5.1_32_archive1
+if [ $? -ne 0 ]
+then
+	echo "Suffered race between device config call and xenstore bus config"
+	echo "Clean-up vxtcom guest controller and try again"
+	/etc/vxtcom/bin/vxtcom-clean-domain $builder
+	sleep 4
+	/etc/vxtcom/bin/vxtcom-setup-domain $builder
+	sleep 4
+	./vxt_rsh -I commands $DOMAIN_NUMBER > RedHat_5.1_32_archive1
+fi
+
+
+xe vm-shutdown uuid=97cee7bf-c1a4-d317-8ed7-3fa52d4e902a
+
+
+
+
+
+
+
+
+
+
+
+
+# Build RedHat 4.7 32 bit
+
+
+xe vm-start uuid=8d7e7ed0-7abe-12b5-3022-e396bb6b225a
+
+
+
+builder=`xenstore-read /vm/8d7e7ed0-7abe-12b5-3022-e396bb6b225a/name`
+
+echo $builder
+
+DOMAIN_NUMBER=`echo $builder | sed 's\Domain-\\\'`
+
+./vxt_rsh -I commands $DOMAIN_NUMBER > RedHat_4.7_32_archive1
+if [ $? -ne 0 ]
+then
+	echo "Suffered race between device config call and xenstore bus config"
+	echo "Clean-up vxtcom guest controller and try again"
+	/etc/vxtcom/bin/vxtcom-clean-domain $builder
+	sleep 4
+	/etc/vxtcom/bin/vxtcom-setup-domain $builder
+	sleep 4
+	./vxt_rsh -I commands $DOMAIN_NUMBER > RedHat_4.7_32_archive1
+fi
+
+
+xe vm-shutdown uuid=8d7e7ed0-7abe-12b5-3022-e396bb6b225a
+
+
+
+
+
+
+
+
+
+
+
+# Build SLES10 SP2 64 bit
+
+
+xe vm-start uuid=9bf2829d-e6ca-ff20-68a9-e54b5eb52fac
+
+
+
+builder=`xenstore-read /vm/9bf2829d-e6ca-ff20-68a9-e54b5eb52fac/name`
+
+echo $builder
+
+DOMAIN_NUMBER=`echo $builder | sed 's\Domain-\\\'`
+
+./vxt_rsh -I commands $DOMAIN_NUMBER > sles10_64_archive1
+if [ $? -ne 0 ]
+then
+	echo "Suffered race between device config call and xenstore bus config"
+	echo "Clean-up vxtcom guest controller and try again"
+	/etc/vxtcom/bin/vxtcom-clean-domain $builder
+	sleep 4
+	/etc/vxtcom/bin/vxtcom-setup-domain $builder
+	sleep 4
+	./vxt_rsh -I commands $DOMAIN_NUMBER > sles10_64_archive1
+fi
+
+
+xe vm-shutdown uuid=9bf2829d-e6ca-ff20-68a9-e54b5eb52fac
+
+
+
+
+
+
+
+
+
+
+
+
+# Build SLES10 SP2 32 bit
+
+
+xe vm-start uuid=b6c8b2af-9bd0-0a7e-835f-6079dde48c76
+
+
+
+builder=`xenstore-read /vm/b6c8b2af-9bd0-0a7e-835f-6079dde48c76/name`
+
+echo $builder
+
+DOMAIN_NUMBER=`echo $builder | sed 's\Domain-\\\'`
+
+./vxt_rsh -I commands.sles $DOMAIN_NUMBER > sles10_32_archive1
+if [ $? -ne 0 ]
+then
+	echo "Suffered race between device config call and xenstore bus config"
+	echo "Clean-up vxtcom guest controller and try again"
+	/etc/vxtcom/bin/vxtcom-clean-domain $builder
+	sleep 4
+	/etc/vxtcom/bin/vxtcom-setup-domain $builder
+	sleep 4
+	./vxt_rsh -I commands $DOMAIN_NUMBER > sles10_32_archive1
+fi
+
+
+xe vm-shutdown uuid=b6c8b2af-9bd0-0a7e-835f-6079dde48c76
+
+
+
+
+
+
+
+
+
+
+
+# Build Orlando CentOS
+
+
+xe vm-start uuid=86dea17f-60c4-4320-7417-de68ab92a511
+
+
+
+builder=`xenstore-read /vm/86dea17f-60c4-4320-7417-de68ab92a511/name`
+
+echo $builder
+
+DOMAIN_NUMBER=`echo $builder | sed 's\Domain-\\\'`
+
+./vxt_rsh -I commands $DOMAIN_NUMBER > Orlando_archive1
+if [ $? -ne 0 ]
+then
+	echo "Suffered race between device config call and xenstore bus config"
+	echo "Clean-up vxtcom guest controller and try again"
+	/etc/vxtcom/bin/vxtcom-clean-domain $builder
+	sleep 4
+	/etc/vxtcom/bin/vxtcom-setup-domain $builder
+	sleep 4
+	./vxt_rsh -I commands $DOMAIN_NUMBER > Orlando_archive1
+fi
+
+
+xe vm-shutdown uuid=86dea17f-60c4-4320-7417-de68ab92a511
+

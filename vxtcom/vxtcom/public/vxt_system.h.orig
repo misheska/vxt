@@ -1,0 +1,150 @@
+#ifndef VXT_SYSTEM_H
+#define VXT_SYSTEM_H
+
+/*
+ *
+ * Copyright (c) 2010, Symantec Corporation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in
+ * the documentation and/or other materials provided with the
+ * distribution.
+ *
+ * Neither the name of Symantec Corporation nor the names of its
+ * contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+
+#ifndef FALSE
+#define FALSE 0
+#define TRUE 1
+#endif
+
+#define MAX_VXT_UNAME 64
+#define MAX_VXT_UUID  48
+
+#define VXTCOM_MAX_DEV_FILE_NAME 36
+
+
+#define VXT_SUCCESS       0x0
+#define VXT_FAIL          0x1
+#define VXT_RSRC          0x2
+#define VXT_PARM          0x3
+#define VXT_NOMEM         0x4
+#define VXT_ALIGN         0x5
+#define VXT_BUSY          0x6
+#define VXT_ABORT         0x7
+#define VXT_SHUTTING_DOWN 0x8
+#define VXT_RANGE         0x9
+#define VXT_DOWN          0xa
+#define VXT_ERROR         0xb
+#define VXT_BUF_SPACE     0xc
+#define VXT_BLOCKED       0xd
+#define VXT_TIMEOUT       0xe
+
+
+
+/*
+ * 
+ * UMI related log file defines:
+ *
+ * Please see the UMI format documentation for a complete description
+ *
+ * All System log entries shall be of the following form:
+ *
+ * <Syslog specific fields> <product> <severity> <UMI> <message>
+ *
+ * Severity:
+ *		ERROR
+ *		WARNING
+ *		INFO
+ *
+ *
+ * VXT Specifications
+ *
+ *  ::::::::::: IMPORTANT :::::::::::::::
+ *  ::::::: All Components Log ::::::::::
+ *  ::::::: Number Starts at 1 ::::::::::
+ *  :::::::::::::::::::::::::::::::::::::
+ *
+ * Product
+ *  
+ *         320  VxT
+ *  
+ * 
+ * Components:
+ *  
+ *         1    Ctrlr 		Top Log Number: 631
+ *         2    MsgDev		Top Log Number: 103
+ *         3    Vxt_Queue_1	Top Log Number: 26
+ *         4    Socket Library	Top Log Number: 18
+ *         5    Mxt Library	Top Log Number:
+ *         6    Vxt_RDMAQ_1	Top Log Number: 0
+ *         7    AuthDB		Top Log Number: 142
+ *         8    Vxt_Card        Top Log Number: 204
+ *  
+ * 
+ * Subsystem/Location
+ *  
+ *         1    Ctrlr/Kernel
+ *         2    Ctrlr/Kernel/linux
+ *         3    Ctrlr/Kernel/xen
+ *         4    Ctrlr/Kernel/windows
+ *         5    Ctrlr/Kernel/winxen
+ *         6    Ctrlr/Usrlib
+ *         7    Ctrlr/Usrlib/linux
+ *         8    Ctrlr/Usrlib/windows
+ *         9    Vxt_queue_1/kernel
+ *         10   Vxt_queue_1/Userlib
+ *         11   MsgDev/Kernel
+ *         12   MsgDev/Usrlib
+ *         13   VxtSock/Usrlib
+ *         14   Mxt/Userlib
+ *         15   Mxt/Userlib/linux
+ *         16   Mxt/Userlib/windows
+ *         17   Vxt_RDMAQ_1/kernel
+ *         18   Vxt_RDMAQ_1/Userlib
+ *         19   AuthDB/Kernel/Common
+ *         20   AuthDB/Kernel/Linux
+ *         21   AuthDB/Kernel/Windows
+ *         22   VxtCard/Kernel
+ *         23   VxtCard/Kernel/linux
+ *	   24   VxtCard/Kernel/xen
+ *  
+ *  
+ *  
+ *  
+ * 
+ * Sample Vxt Controller Kernel message:
+ *  
+ * 
+ * "<syslog prefix>"  VxT Info V-320-1-1-345  vxtcom_dec_ref:shutting down the controller
+ * 
+ * 
+ */
+
+
+#endif /* VXT_SYSTEM_H */

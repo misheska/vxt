@@ -1,0 +1,15 @@
+This directory contains the files needed to build the
+vxt_socket interface for linux guests, sitting on top
+of a XenSource hypervisor.
+
+The socket interface is contained in vxt_socket_dev.c
+It wraps the vxt_msg facility which presents a two-way
+shared memory queue device.
+
+The vxt_msg device is vended from the vxt_cntrlr.  The
+vxt_cntrlr is an abstracted bus.  The bus has a 
+well developed configuration capability that allows
+for the dynamic creation and destruction of devices.
+The controller is tied into a configuration authority
+so that new devices may be attached to suitable endpoints
+at the guest operating systems request.

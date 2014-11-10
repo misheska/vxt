@@ -1,0 +1,5 @@
+LIBRARY uuidread
+
+EXPORTS
+    get_my_uuid
+	

@@ -1,0 +1,68 @@
+To Build the vxtcom packages:
+
+Choose a sandbox location:
+
+	The initial location can be empty, point the build
+	to the location by setting the SANDBOX variable.
+
+	i.e.  SANDBOX=/sandbox
+
+Initialize the shell defines:
+
+	source the xenv script file.
+
+	i.e.  . xenv
+
+Run "make"
+
+	Make has been designed to build all of the necessary binaries.
+	Simply type make to bring all the binary product builds up-to-date
+	and to build the VXTcom RPMs
+
+
+PRODUCTS:
+
+
+	This facility builds RPMs for the VXTcom subsystem.  Two RPMs
+	are built:
+
+	1:  VXTcom: 
+		Contains: front-end and back-end Veritas bus 
+			< vxtcard_front.ko, vxtcard_back.ko >
+		adapters for Xen systems.  Also contains the controller
+			< vxtctrlr.ko >  
+		The controllers come with a built-in messaging device,
+		(others can be loaded through the controller library.)
+
+		The authorization/router database for VxT device connection,
+		vxtauth_db.ko.
+
+		User level library for the VXT messaging device
+			< libvxt_socket.so >
+
+		User level library for multiplexing the client connections
+		from a domain:
+
+			< libmxt.so >
+
+		scripts for provisioning and deprovisiong vxt
+		controller support for a guest.
+
+
+	2:  VXTcom-dev:
+
+		Contains:  all of VXTcom binaries
+		
+		A developers DDK for the controller and vxt
+		messaging devices.
+
+
+
+
+
+
+OVERRIDES:
+
+The build may be directed to cross-build by setting KERNSRC prior to sourcing xenv.  Likewise the build may be done for specific releases by setting TARGET_FLAVOURS the specific 
+
+See the xenv script file for more detail.

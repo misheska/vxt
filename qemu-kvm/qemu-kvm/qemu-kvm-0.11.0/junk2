@@ -1,0 +1,11 @@
+
+
+
+require {
+	type virt_t;
+	type clock_device_t;
+	class chr_file read;
+	class chr_file write;
+	
+allow virt_t clock_device_t:chr_file read write 
+allow virt_t clock_device_t:chr_file write 

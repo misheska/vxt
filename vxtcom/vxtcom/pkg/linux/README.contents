@@ -1,0 +1,17 @@
+Installed Products:
+
+
+/etc/vxtcom/vxtcard_back.ko.<release> /* Linux Vxt Xen adapter back end */
+/etc/vxtcom/vxtcard_front.ko.<release> /* Linux Vxt Xen adapter front end */
+/etc/vxtcom/vxtctrlr.ko.<release>    /* Linux Vxt controller */
+/etc/vxtcom/vxtauth_db.ko.<release>  /* Linux Vxt authorization/routing DB */
+/etc/vxtcom/modinst-vxt         /* script for kernel module installation */
+/etc/vxtcom/pkginfo             /* script for rpm query */
+
+/etc/vxtcom/bin/vxtcom-clean-domain /* script for de-provisioning VXT */
+/etc/vxtcom/bin/vxtcom-setup-domain /* binary for provisioning VXT */
+
+/usr/lib/libvxt_socket.so  /* Message device user level library */
+/usr/lib/libmxt.so /* Multiplexer user level library */
+/usr/include/mxt_lib.h /* Multiplexer library functions */
+/usr/vxtcom_ddk /* _DEV PACKAGE ONLY:  devlopers kit for msg device and ctrlr */

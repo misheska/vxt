@@ -1,0 +1,15 @@
+Incident:
+
+CVS: Please enter a valid incident number where specified.
+CVS: Enter your comments on the lines below the incident number.
+CVS:
+CVS: WINCVS USERS:
+CVS:    Please manually remove all the lines beginning with "CVS:"
+CVS:    Unlike Command line CVS, Wincvs doesn't remove these lines 
+CVS:    automatically. As a result, you will see this template in your
+CVS:    delta commentary if you don't remove it.
+CVS:
+CVS: ALL USERS:
+CVS:    Please do not used a long line of "=" sign in your comments.
+CVS:    This will cause interesting results to the graphics in WinCVS
+CVS:

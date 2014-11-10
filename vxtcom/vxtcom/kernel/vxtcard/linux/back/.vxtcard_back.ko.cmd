@@ -1,0 +1,1 @@
+cmd_/vxtcom/kernel/vxtcard/linux/back/vxtcard_back.ko := ld -m elf_i386 -m elf_i386 -r -o /vxtcom/kernel/vxtcard/linux/back/vxtcard_back.ko /vxtcom/kernel/vxtcard/linux/back/vxtcard_back.o /vxtcom/kernel/vxtcard/linux/back/vxtcard_back.mod.o

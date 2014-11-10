@@ -1,0 +1,21 @@
+./configure --target-list="i386-softmmu x86_64-softmmu arm-softmmu cris-softmmu m68k-softmmu mips-softmmu mipsel-softmmu mips64-softmmu mips64el-softmmu ppc-softmmu ppcemb-softmmu ppc64-softmmu sh4-softmmu sh4eb-softmmu sparc-softmmu  i386-linux-user x86_64-linux-user alpha-linux-user arm-linux-user  armeb-linux-user cris-linux-user m68k-linux-user mips-linux-user  mipsel-linux-user ppc-linux-user ppc64-linux-user ppc64abi32-linux-user  sh4-linux-user sh4eb-linux-user sparc-linux-user sparc64-linux-user  sparc32plus-linux-user" --interp-prefix=cdy/qemu-cdykvm --audio-drv-list=pa,sdl,alsa,oss --disable-kvm --disable-strip --disable-xen
+
+
+
+./configure --target-list=x86_64-softmmu --audio-drv-list=pa,sdl,alsa,oss --disable-strip --extra-ldflags="-Wl,--build-id" --disable-xen
+
+
+
+make V=1 VL_LDFLAGS=-Wl,--build-id
+
+
+
+
+build commands
+
+
+make V=1 VL_LDFLAGS=-Wl,--build-id
+cd x86_64-softmmu/
+cp qemu-system-x86_64 /usr/bin/qemu-kvm
+setfattr -n security.selinux -v "system_u:object_r:qemu_exec_t:s0\000" /usr/bin/qemu-kvm
+

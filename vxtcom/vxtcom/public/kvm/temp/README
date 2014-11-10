@@ -1,0 +1,5 @@
+Files contained in this directory come from the latest Linux tree
+When these files are available under /usr/include/linux, remove this
+directory and redirect the include statements inside of the VxT KVM
+source files in VxT Card.
+

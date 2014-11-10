@@ -1,0 +1,1 @@
+cmd_/vxtcom/kernel/vxtdb/linux/vxtauth_db.ko := ld -r -m elf_i386 -T /git_kernel/linux-2.6/scripts/module-common.lds --build-id -o /vxtcom/kernel/vxtdb/linux/vxtauth_db.ko /vxtcom/kernel/vxtdb/linux/vxtauth_db.o /vxtcom/kernel/vxtdb/linux/vxtauth_db.mod.o

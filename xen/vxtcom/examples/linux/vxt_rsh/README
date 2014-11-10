@@ -1,0 +1,122 @@
+/*
+ *
+ * Copyright (c) 2010, Symantec Corporation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in
+ * the documentation and/or other materials provided with the
+ * distribution.
+ *
+ * Neither the name of Symantec Corporation nor the names of its
+ * contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+
+The code in this directory builds a remote shell client and server.
+It was written to provide an example program for vxt socket library
+usage.
+
+The remote shell is not product level, it does not support terminal
+type setting or window sizing.  However, it works well enough when 
+run between a guest and Domain 0.
+
+The remote shell program is not set up to show the performance prowess
+of VxT direct communications, the communications is character for character
+to provide full terminal emulation.  Please see one of the performance test
+code cases for examples of data streaming.
+
+The remote shell exec can be replaced by other binaries, lending flexibility
+to the framework provided by this example.  This and the introduction of
+streaming would make the approach used here useful for IPC style inter-domain
+communications.
+
+
+Note:  The curses library must be downloaded to compile and run this
+example.
+
+eg. yum --enablerepo=base install ncurses-devel.i386
+
+
+NOTE:  
+
+An authorization/routing database entry must be placed in the appropriate
+auth Hub, (DOM0) to allow the establishment of connection.  This entry will
+be needed whether the rsh connection is being established from Dom0 or the
+guest.  The class recognition mechanism is used.  i.e. the portion of the
+device name scanned is a proper prefix of the entire name.
+
+Example Code for authorization entry: 
+		test case guest uuid = 28eaa608-e425-0562-11c1-3a7b2f55a4ea
+
+
+************** FILE CONTENTS: *******************
+
+typedef unsigned int uint32_t;
+typedef unsigned long long uint64_t;
+
+
+
+#include <stdio.h>
+#include <fcntl.h>
+#include <string.h>
+
+#include "/vxtcom_auth_gold2/public/vxt_system.h"
+#include "/vxtcom_auth_gold2/public/vxt_auth.h"
+
+main()
+{
+        int authdev;
+        vxt_db_insert_arg_t insert_arg;
+        int i;
+
+        printf("VxT Set Rsh guest test\n");
+        authdev = open("/dev/vxtdb-auth", O_RDWR);
+        printf("authdev = 0x%x\n", authdev);
+        if(authdev < 0) {
+                printf("Failed to open the Vxt authorization "
+                       "database device\n");
+        }
+        strncpy(insert_arg.record.client,
+                "28eaa608-e425-0562-11c1-3a7b2f55a4ea", 40);
+	/*
+	 * The actual name for any instance of VXT_RSH includes the
+	 * process id in order to provide a unique identifier.  However
+	 * The lookup in the database is against the class "VXT_RSH_"
+	 * Therfore we set the class_name_length.  If we want to check
+	 * the entire string we set the value to 0.
+	 */
+        insert_arg.record.class_name_length=8;
+        insert_arg.record.priv.valid = 1;
+        insert_arg.record.label = 0x1324;
+        strncpy(insert_arg.record.server, VXTDB_DOM0_ENDPOINT, 40);
+        strncpy(insert_arg.record.dev_name, "VXT_RSH_2822", MAX_VXT_UNAME);
+        insert_arg.flags = (VXT_DB_INSERT_CLIENT | VXT_DB_INSERT_SERVER);
+
+
+        ioctl(authdev, VXT_AUTH_DB_INSERT, (void *)(long)&insert_arg);
+
+}
+

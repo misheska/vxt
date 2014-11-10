@@ -1,0 +1,62 @@
+#!/bin/sh
+
+# Copyright (c) 2010, Symantec Corporation
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+#
+# Redistributions of source code must retain the above copyright
+# notice, this list of conditions and the following disclaimer.
+#
+# Redistributions in binary form must reproduce the above copyright
+# notice, this list of conditions and the following disclaimer in
+# the documentation and/or other materials provided with the
+# distribution.
+#
+# Neither the name of Symantec Corporation nor the names of its
+# contributors may be used to endorse or promote products derived
+# from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+# COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+# ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+#
+# scan_vxt_system
+#
+# scan_vxt_system is meant to be used in Domain 0, it relies on
+# vxt_scan and vxt_trace programs and these must reside in the
+# same directory as the scan_vxt_system script file.
+# scan_vxt_system finds the list of active virtual machines
+# and scans them for active vxt controllers and vxt devices
+# The -I option for vxt_scan is exercised creating device record files
+# These files are fed into vxt_trace calls, allowing signal trace
+# data to be captured for all of the active VXT devices in the system.
+#
+# scan_vxt_system creates a subdirectory called vxt_trace_output and 
+# pushes all of the output to files in this directory.
+
+
+vxt_domains=`xenstore-ls /vm | grep -E "Domain-[0-9]*" -o | sed s/Domain-//`
+dir=vxt_trace_output
+mkdir $dir 2> /dev/NULL
+
+for i in $vxt_domains
+do
+	echo "Scan for controllers and devices in domain $i"
+	/etc/vxtcom/bin/vxt_scan $i -I -f $dir/vxt_devrecs_domain$i > $dir/vxt_devs_domain$i
+	chmod 644 $dir/vxt_devrecs_domain*
+	/etc/vxtcom/bin/vxt_trace -f $dir/vxt_devrecs_domain$i  > $dir/vxt_traces_domain$i
+done
+

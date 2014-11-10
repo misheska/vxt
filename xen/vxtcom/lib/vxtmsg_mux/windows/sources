@@ -1,0 +1,65 @@
+TARGETNAME=vxtmsg_mux
+TARGETPATH=obj
+TARGETTYPE=DYNLINK
+UMTYPE=windows
+
+USE_CRTDLL= 1
+
+!if "$(_BUILDARCH)" == "amd64"
+
+SOCKLIB = $(BASEDIR)\public\sdk\lib\$(_BUILDARCH)\wsock32.lib
+!else
+
+SOCKLIB = $(BASEDIR)\public\sdk\lib\wsock32.lib
+
+!endif
+
+VXLIB = ..\..\vxtlib\windows\$O\vxtsock.lib
+
+TARGETLIBS = \
+    $(BASEDIR)\public\sdk\lib\*\kernel32.lib \
+    $(BASEDIR)\public\sdk\lib\*\advapi32.lib \
+    $(BASEDIR)\public\sdk\lib\*\user32.lib \
+    $(BASEDIR)\public\sdk\lib\*\ntdll.lib \
+    $(BASEDIR)\public\sdk\lib\*\ole32.lib \
+    $(BASEDIR)\public\sdk\lib\ws2_32.lib \
+    $(BASEDIR)\public\sdk\lib\*\msvcrt.lib\
+    $(SOCKLIB) \
+    $(VXLIB)
+
+
+
+COMMON = ..\common
+
+INCLUDES = .; \
+	..\common; \
+	..\..\..;\
+	$(_ISISROOT)\src\inc;
+		   
+
+MSC_WARNING_LEVEL=/W0
+
+COMMON_SOURCES = \
+	mxt.c \
+	mxt_bufops.c \
+	mxt_common.c \
+	mxt_vxt.c
+
+WINDOW_SOURCES = \
+	mxt_auth.c \
+	mxt_platform.c \
+	
+
+SOURCES= $(COMMON_SOURCES) $(WINDOW_SOURCES) vxtmsg_mux.rc
+	
+NTTARGETFILES=$(COMMON_SOURCES)
+
+C_DEFINES=  $(C_DEFINES)  -D_DEBUG -DWIN32  -D_CONSOLE -D_WINNT -DVXT_ENDPOINT -D_MBCS
+MSC_cppflags=/MT /Od /W3 /Gm /MLd  /W3 /nologo /c /W  /TCp64
+
+#C_DEFINES = /MT /Od /W3 /I"." /D"WIN32" /D"_DEBUG" /D"DEBUG" /D"_CONSOLE" /D"_WINNT" /D"VXT_ENDPOINT" /D"_MBCS" /Gm  /MLd  /W3 /nologo /c /Wp64  /TC
+
+
+
+
+

@@ -1,0 +1,32 @@
+TARGETNAME=vxt_auth
+TARGETPATH=obj
+TARGETTYPE=PROGRAM
+
+TARGETLIBS = \
+    $(BASEDIR)\public\sdk\lib\*\kernel32.lib \
+    $(BASEDIR)\public\sdk\lib\*\advapi32.lib \
+    $(BASEDIR)\public\sdk\lib\*\user32.lib \
+    $(BASEDIR)\public\sdk\lib\*\ntdll.lib \
+    $(BASEDIR)\public\sdk\lib\*\ole32.lib \
+    ..\..\..\lib\vxtlib\windows\$O\vxtsock.lib \
+
+INCLUDES = $(DDK_INC_PATH); \
+           ..;\
+           ..\..\..\..\vxtcom\public;\
+           ..\..\..\..\vxtcom;\
+           ..\..\..\lib\vxtlib\windows;\
+           ..\vxtdbread;\
+
+C_DEFINES=$(C_DEFINES) -DVXT_OS_DEP -Dwin
+
+TOOLS_DIR = ..\..
+
+VXT_AUTH_SOURCES = \
+    vxt_auth.c \
+
+MSC_WARNING_LEVEL=/W3 /WX
+
+SOURCES= $(VXT_AUTH_SOURCES)
+NTTARGETFILES= $(VXT_AUTH_SOURCES)
+
+UMTYPE=console

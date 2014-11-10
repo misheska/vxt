@@ -1,0 +1,111 @@
+# Copyright (c) 2010, Symantec Corporation
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+#
+# Redistributions of source code must retain the above copyright
+# notice, this list of conditions and the following disclaimer.
+#
+# Redistributions in binary form must reproduce the above copyright
+# notice, this list of conditions and the following disclaimer in
+# the documentation and/or other materials provided with the
+# distribution.
+#
+# Neither the name of Symantec Corporation nor the names of its
+# contributors may be used to endorse or promote products derived
+# from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+# COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+# ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+#
+
+
+RPM_VER_FILE = $(SANDBOX)/vxtcom/pkg/linux/rpm.version
+
+VERSION=$(shell                                         \
+	grep version $(RPM_VER_FILE) | cut -d = -f 2)
+
+RELEASE=$(shell                                         \
+	grep release $(RPM_VER_FILE) | cut -d = -f 2)
+
+REAL_ARCH=$(shell arch)
+ifeq ($(REAL_ARCH),ppc64)
+	USER_ARCH=$(REAL_ARCH)
+	KERN_ARCH=$(REAL_ARCH)
+endif
+
+ifeq ($(REAL_ARCH),ia64)
+	ifneq ($(64BIT_UTILS),yes)
+		32BIT_UTILS=yes
+	endif
+
+	ifeq ($(32BIT_UTILS),yes)
+		ifeq ($(LINUX_PLATFORM),SuSE)
+			USER_ARCH=i586
+		else
+			USER_ARCH=i686
+		endif
+	else
+		USER_ARCH=$(REAL_ARCH)
+	endif
+	KERN_ARCH=$(REAL_ARCH)
+endif
+
+ifeq ($(REAL_ARCH),x86_64)
+	ifneq ($(64BIT_UTILS),yes)
+		32BIT_UTILS=yes
+	endif
+
+	ifeq ($(32BIT_UTILS),yes)
+		ifeq ($(LINUX_PLATFORM),SuSE)
+			USER_ARCH=i586
+		else
+			USER_ARCH=i686
+		endif
+	else
+		USER_ARCH=$(REAL_ARCH)
+	endif
+	KERN_ARCH=$(REAL_ARCH)
+endif
+
+ifeq ($(REAL_ARCH),i686)
+	32BIT_UTILS=yes
+	ifeq ($(LINUX_PLATFORM),SuSE)
+	        USER_ARCH=i586
+	else
+		USER_ARCH=i686
+	endif
+	KERN_ARCH=$(USER_ARCH)
+endif
+
+VERS=$(shell \
+	if [ -f  $(KERNSRC)/include/linux/utsrelease.h ]; 	\
+	then							\
+		awk -F\" ' /REL/ {print $$2}' $(KERNSRC)/include/linux/utsrelease.h; \
+	else 							\
+		awk -F\" ' /REL/ {print $$2}' $(KERNSRC)/include/linux/version.h; \
+	fi 							\
+	)
+
+REL=$(shell                                             \
+	echo XS50;					\
+	)
+
+
+#	[ -f /etc/redhat-release ] && echo RHEL$(LINUX_VERSION);        \
+#	[ -f /etc/SuSE-release ] && echo SLES$(LINUX_VERSION);          \
+#	)
+

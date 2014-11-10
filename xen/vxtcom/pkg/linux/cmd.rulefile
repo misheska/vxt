@@ -1,0 +1,278 @@
+#
+# Copyright (c) 2010, Symantec Corporation
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+#
+# Redistributions of source code must retain the above copyright
+# notice, this list of conditions and the following disclaimer.
+#
+# Redistributions in binary form must reproduce the above copyright
+# notice, this list of conditions and the following disclaimer in
+# the documentation and/or other materials provided with the
+# distribution.
+#
+# Neither the name of Symantec Corporation nor the names of its
+# contributors may be used to endorse or promote products derived
+# from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+# COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+# ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+#
+
+
+#
+# Command rulefile for Xen compile.
+#
+
+ifeq ("$(VOL_PROF)", "yes")
+	VOL_PROF_DEF=-finstrument-functions
+else
+	VOL_PROF_DEF=
+endif
+
+LICDEF	= -DLIC
+LICMGR	= SIG
+
+
+DEV1 = -DLINUX $(LICDEF) -DVOFF_T_QUAD -DVOL_NODMP_SUPPORT -D$(LINUX_PLATFORM)$(LINUX_VERSION)
+DEV2 =
+
+INC = $(ROOT)/usr/include
+
+
+#
+# Install locations.
+# ETCINIT - where bootup scripts get installed
+#
+
+SBIN = $(INSTROOT)/$(MACH)/sbin
+USRSBIN = $(INSTROOT)/$(MACH)/usr/sbin
+USRBIN = $(INSTROOT)/$(MACH)/usr/bin
+USRLIB	= $(INSTROOT)/$(MACH)/usr/lib
+ETCINIT = $(INSTROOT)/$(MACH)/etc/rc.d/init.d
+ETCVX = $(INSTROOT)/$(MACH)/etc/vx
+HEADINST = $(INSTROOT)/$(MACH)/usr/include
+
+RELEASE =
+VERSION =
+
+CCSTYPE = ELF
+
+PFX = $(VXVM_TARGET_USER)
+
+AR = $(PFX)ar
+AS = $(PFX)as
+CC = $(PFX)gcc
+CPP = /lib/cpp
+_GZIP_ = $(PFX)gzip
+LD = $(PFX)ld
+M4 = $(PFX)m4
+MCS = $(PFX)mcs
+LEX = $(PFX)lex
+LINT = $(PFX)lint
+LORDER = $(PFX)lorder
+NM = $(PFX)nm
+STRIPT = $(PFX)strip
+SIZE = $(PFX)size
+TIC = tic
+TSORT = $(PFX)tsort
+YACC = $(PFX)yacc
+
+INS = install
+SYMLINK = :
+
+SHELL = /bin/sh
+
+ARFLAGS = -rv
+ASFLAGS = -m
+
+ARCH=$(shell arch)
+
+ARCHCFLAG = -fPIC
+
+ifeq ($(ARCH),ppc64)
+	ARCHCFLAG += -fsigned-char
+endif
+
+ifeq ($(ARCH),ia64)
+	ifneq ($(64BIT_UTILS),yes)
+		32BIT_UTILS=yes
+	endif
+
+	ifeq ($(32BIT_UTILS),yes)
+		ARCHCFLAG += -m32
+		ifeq ($(LINUX_PLATFORM),SuSE)
+			ifeq ($(LINUX_VERSION),9)
+				ARCHCFLAG += -mcpu=pentium4
+			endif
+			ARCHCFLAG += -march=i586
+		else
+			ifeq ($(LINUX_VERSION),4)
+				ARCHCFLAG += -mcpu=pentium4
+			endif
+			ARCHCFLAG += -march=i686
+		endif	
+	endif
+endif
+
+ifeq ($(ARCH),i686)
+	ARCHCFLAG += -m32
+	ifeq ($(LINUX_PLATFORM),SuSE)
+		ifeq ($(LINUX_VERSION),9)
+			ARCHCFLAG += -mcpu=pentium4
+		endif
+		ARCHCFLAG += -march=i586
+	else
+		ARCHCFLAG += -march=i686
+	endif
+endif
+
+ifeq ($(ARCH),x86_64)
+	ifneq ($(64BIT_UTILS),yes)
+		32BIT_UTILS=yes
+	endif
+
+	ifeq ($(32BIT_UTILS),yes)
+		ARCHCFLAG += -m32
+		ifeq ($(LINUX_PLATFORM),SuSE)
+			ifeq ($(LINUX_VERSION),9)
+				ARCHCFLAG += -mcpu=pentium4
+			endif
+			ARCHCFLAG += -march=i586
+		else
+			ifeq ($(LINUX_VERSION),4)
+				ARCHCFLAG += -mcpu=pentium4
+			endif
+			ARCHCFLAG += -march=i686
+		endif
+	endif
+endif
+
+OPTCFLAG = -Wall -Wno-parentheses -Wno-unused -O
+CFLAGS = $(VOL_PROF_DEF) -DI18N $(OPTCFLAG) $(ARCHCFLAG) -D_GNU_SOURCE
+LDSTRIP =
+LDPRIVATE = -L$(ROOT)/usr/lib
+LDFLAGS = $(ARCHCFLAG) $(LDSTRIP) $(LDPRIVATE)
+LFLAGS =
+LINTFLAGS =
+YFLAGS =
+
+HCC = /bin/cc
+HAR = /bin/ar
+HAS = /bin/as
+HLD = /bin/ld
+HNM = /bin/nm
+
+RPM=$(shell type rpmbuild >/dev/null 2>&1; if [ $$? -eq 1 ]; then echo rpm; else echo rpmbuild; fi)
+#RPM=rpmbuild
+
+GLOBALDEF =
+GLOBALINC = -I$(INC) -I../vold
+
+# debug flags
+DEBUG_FLAGS = -DDEBUG -DUSE_ASSERT
+DEBUG_CFLAG = -Wall -Wno-parentheses -Wno-unused -g $(VXVM_OPT) $(ARCHCFLAG)
+DEBUG_MAKE  = debug
+DEBUG_LDSTRIP = $(LDPRIVATE)
+
+DEFLIST = \
+	$(DEV1) \
+	$(GLOBALDEF) \
+	$(GLOBALINC) \
+	$(LOCALDEF) \
+	$(LOCALINC) \
+	$(DEV2)
+
+NOSHLIBS = -dn
+ROOTLIBS = $(NOSHLIBS)
+PERFLIBS = $(NOSHLIBS)
+SHLIBS =
+LDLIBS =
+
+CH =
+
+# Flags for creating linted library.
+# -m Do not complain about externs not declared static
+# -x Do not compalin about externs never used
+# -u Do not complain about functions defined defined but not used 
+# -y Create a linted library
+
+# you have to also pass the compiler flags to lint
+LINTFLAGS = -Dlint
+LINT_LIBRARY_FLAGS=$(LINTFLAGS) -y -m -x -u $(CFLAGS) $(DEFLIST)
+
+# this can be used add other flags to turn off lint errors
+# during linking a file with a library.
+LINT_LINK_FLAGS = 
+
+
+MAKEARGS = \
+	ROOT='$(ROOT)' \
+	INC='$(INC)' \
+	AR='$(AR)' \
+	AS='$(AS)' \
+	CC='$(CC)' \
+	LD='$(LD)' \
+	M4='$(M4)' \
+	MCS='$(MCS)' \
+	LEX='$(LEX)' \
+	LINT='$(LINT)' \
+	LORDER='$(LORDER)' \
+	NM='$(NM)' \
+	STRIP='$(STRIP)' \
+	SIZE='$(SIZE)' \
+	TSORT='$(TSORT)' \
+	YACC='$(YACC)' \
+	INS='$(INS)' \
+	ARFLAGS='$(ARFLAGS)' \
+	ASFLAGS='$(ASFLAGS)' \
+	CFLAGS='$(CFLAGS)' \
+	LDFLAGS='$(LDFLAGS)' \
+	LFLAGS='$(LFLAGS)' \
+	LINTFLAGS='$(LINTFLAGS)' \
+	YFLAGS='$(YFLAGS)' \
+	DEV1='$(DEV1)' \
+	DEV2='$(DEV2)' \
+	LINT_LIBRARY_FLAGS='$(LINT_LIBRARY_FLAGS)' 
+
+.c.o:
+	$(CC) $(CFLAGS) $(DEFLIST) -o $*.o -c $<
+
+%.o: $(COMMON_DIR)/%.c
+	$(CC) $(CFLAGS) $(DEFLIST) -o $*.o -c $<
+
+.c.ln:
+	$(LINT) $(LINTFLAGS) $(CFLAGS)  $(DEFLIST) -c $<
+
+%.ln: $(COMMON_DIR)/%.c
+	$(LINT) $(LINTFLAGS) $(CFLAGS) $(DEFLIST) -c $<
+
+.c.a:
+	$(CC) $(CFLAGS) $(DEFLIST) -c $<
+	$(AR) $(ARFLAGS) $@ $*.o
+	rm -f $*.o
+
+.s.o:
+	$(AS) $(ASFLAGS) -o $@ $<
+
+%: %.sh
+	cat $< > $(*F)
+	chmod +x $@
+
+%: %.pl
+	cat $< > $(*F)
+	chmod +x $@

@@ -1,0 +1,151 @@
+# Copyright (c) 2010, Symantec Corporation
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+#
+# Redistributions of source code must retain the above copyright
+# notice, this list of conditions and the following disclaimer.
+#
+# Redistributions in binary form must reproduce the above copyright
+# notice, this list of conditions and the following disclaimer in
+# the documentation and/or other materials provided with the
+# distribution.
+#
+# Neither the name of Symantec Corporation nor the names of its
+# contributors may be used to endorse or promote products derived
+# from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+# COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+# ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+#
+
+
+include $(CMDRULES)
+
+include $(PKGRULES)
+
+ARCH = $(shell arch)
+
+VXETCDIR = $(INSTROOT)/etc/vxtcom
+VXLIBDIR = $(INSTROOT)/usr/lib
+VXINCDIR = $(INSTROOT)/usr/vxtcom_ddk/include
+
+FLAVOR = `uname -r`
+
+include $(KERNSRC)/.config
+
+package: VXT_package VXTdev_package
+
+ifeq ($(ARCH),x86_64)
+VXLIBDIR = $(INSTROOT)/usr/lib64
+ALTVXLIBDIR = $(INSTROOT)/usr/lib
+endif
+
+
+VXT_package: VXTcom-scripts VXTcom-modules VXTcom-lib VXTcom-mxt VXTcom.spec VXTcom-tools ALT-VXTcom-lib
+	@echo "MAKE: Installing pkgino file..."
+	@[ -d $(VXETCDIR) ] || mkdir -p $(VXETCDIR)
+	@rm -f $(VXETCDIR)/pkginfo
+	@$(INS) -m 0755 pkginfo $(VXETCDIR)
+	@$(RPM) -bb --define "KVERSION $(VERS)" --define "VXTCOMREL $(REL)" \
+	     --define "_rpmdir $(PKGDEST)" \
+	     --define "version $(VERSION)" \
+	     --define "release $(RELEASE)" \
+	     --buildroot $(INSTROOT) --target=$(KERN_ARCH) ./VXTcom.spec
+
+VXTdev_package: VXTcom-scripts VXTcom-modules VXTcom-lib VXTcom-mxt VXTcom_dev.spec VXTcom-tools ALT-VXTcom-lib
+	@echo "MAKE: Installing pkgino file..."
+	@[ -d $(VXETCDIR) ] || mkdir -p $(VXETCDIR)
+	@[ -d $(VXETCDIR) ] || mkdir -p $(VXETCDIR)
+	@rm -f $(VXETCDIR)/pkginfo
+	@$(INS) -m 0755 pkginfo $(VXETCDIR)
+	@echo "MAKE: Installing DDK resources"
+	@[ -d $(VXINCDIR) ] || mkdir -p $(VXINCDIR)
+	cp -r ../../public/* $(VXINCDIR)
+	CVSFILES=`find $(VXINCDIR) -name "CVS"`
+	@$(RPM) -bb --define "KVERSION $(VERS)" --define "VXTCOMREL $(REL)" \
+	     --define "_rpmdir $(PKGDEST)" \
+	     --define "version $(VERSION)" \
+	     --define "release $(RELEASE)" \
+	     --buildroot $(INSTROOT) --target=$(KERN_ARCH) ./VXTcom_dev.spec
+	@echo "MAKE: Remove dev include files to avoid pkg warning on other packages"
+	rm -rf $(VXINCDIR)
+
+VXTcom-scripts:
+	@echo "MAKE: Making config binaries"
+	cd ../../scripts/linux; \
+	$(MAKE) -f Makefile all ;  \
+	cp vxtcom-setup-domain $(VXETCDIR)/bin; \
+	cp vxtcom-clean-domain $(VXETCDIR)/bin; \
+	cd init; \
+	$(MAKE) -f Makefile all ; \
+	cp vxt_provision_daemon $(VXETCDIR)/bin; \
+	cp vxtcom_dom0.sh $(VXETCDIR); \
+	cp vxtcom_guest.sh $(VXETCDIR)
+
+VXTcom-modules:
+	@echo "MAKE: Making VXTCARD kernel modules"
+	cd ../../kernel/vxtcard/linux; \
+	$(MAKE) -f Makefile ;  \
+	cp front/vxtcard_front.ko $(VXETCDIR)/vxtcard_front.ko.$(FLAVOR); \
+	cp back/vxtcard_back.ko $(VXETCDIR)/vxtcard_back.ko.$(FLAVOR);
+	@echo "MAKE: Making VXTauth_db kernel modules"
+	cd ../../kernel/vxtdb/linux; \
+	$(MAKE) -f Makefile ;  \
+	cp vxtauth_db.ko $(VXETCDIR)/vxtauth_db.ko.$(FLAVOR);
+	@echo "MAKE: Making VXTcom kernel modules"
+	cd ../../kernel/vxtctrlr/linux; \
+	$(MAKE) -f Makefile ;  \
+	cp vxtctrlr.ko $(VXETCDIR)/vxtctrlr.ko.$(FLAVOR); \
+
+VXTcom-lib:
+	@echo "MAKE: Making VXTlib user modules";
+	cd ../../lib/vxtlib/linux; \
+	$(MAKE) -f Makefile clean; \
+	export RPM_BUILD=yes; \
+	$(MAKE) -f Makefile CFLAGS=""; \
+	cp libvxt_socket.so $(VXLIBDIR)
+
+ifeq ($(ARCH),x86_64)
+ALT-VXTcom-lib:
+	@echo "MAKE: Making Alt architecture VXTlib user modules";
+	cd ../../lib/vxtlib/linux; \
+	$(MAKE) -f Makefile clean; \
+	export RPM_BUILD=yes; \
+	$(MAKE) -f Makefile CFLAGS="-m32 -march=i686 -L/usr/lib"; \
+	cp libvxt_socket.so $(ALTVXLIBDIR)
+else
+ALT-VXTcom-lib:
+	
+endif
+
+VXTcom-mxt:
+	@echo "MAKE: Making Mxt user modules";
+	cd ../../lib/vxtmsg_mux/linux; \
+	$(MAKE) -f libmxt.mk all; \
+	cp libmxt.so $(VXLIBDIR); \
+	cp mxt_trace $(VXETCDIR)/bin/.; \
+	cp ../common/mxt_lib.h $(INSTROOT)/usr/include/
+
+VXTcom-tools:
+	@echo "Make: Making the vxt tools modules";
+	cd ../../tools/linux; \
+	$(MAKE) -f Makefile ; \
+	cp vxt_scan $(VXETCDIR)/bin ; \
+	cp vxt_trace $(VXETCDIR)/bin ; \
+	cp vxt_db_reader $(VXETCDIR)/bin ; \
+	cp vxt_auth $(VXETCDIR)/bin ; \
+	cp scan_vxt_system $(VXETCDIR)/bin 

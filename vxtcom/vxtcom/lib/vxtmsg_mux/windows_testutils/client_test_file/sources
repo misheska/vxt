@@ -1,0 +1,51 @@
+TARGETNAME=clnt_test_file
+TARGETPATH=obj
+TARGETTYPE=PROGRAM
+UMTYPE=         console
+
+USE_CRTDLL= 1
+
+
+!if "$(_BUILDARCH)" == "amd64"
+
+SOCKLIB = $(BASEDIR)\public\sdk\lib\$(_BUILDARCH)\wsock32.lib
+!else
+
+SOCKLIB = $(BASEDIR)\public\sdk\lib\wsock32.lib
+
+!endif
+
+
+TARGETLIBS = \
+    $(BASEDIR)\public\sdk\lib\*\kernel32.lib \
+    $(BASEDIR)\public\sdk\lib\*\advapi32.lib \
+    $(BASEDIR)\public\sdk\lib\*\user32.lib \
+    $(BASEDIR)\public\sdk\lib\*\ntdll.lib \
+    $(BASEDIR)\public\sdk\lib\*\ole32.lib \
+    $(BASEDIR)\public\sdk\lib\ws2_32.lib \
+     $(SOCKLIB) \
+    $(BASEDIR)\public\sdk\lib\*\msvcrt.lib
+    
+    
+
+    
+INCLUDES = ..\..\common; \
+	   ..\..\windows; \
+	   ..\..\..\..;\
+           
+
+MSC_WARNING_LEVEL=/W0
+
+SOURCES=\
+	clnt_test_file.c \
+	getopt.c
+        
+
+C_DEFINES=  $(C_DEFINES)  -D_DEBUG -DWIN32 -DDEBUG -D_CONSOLE -D_WINNT -DVXT_ENDPOINT -D_MBCS
+MSC_cppflags=/MT /Od /W3 /Gm /MLd  /W3 /nologo /c /W  /TCp64
+
+#C_DEFINES = /MT /Od /W3 /I"." /D"WIN32" /D"_DEBUG" /D"DEBUG" /D"_CONSOLE" /D"_WINNT" /D"VXT_ENDPOINT" /D"_MBCS" /Gm  /MLd  /W3 /nologo /c /Wp64  /TC
+
+
+
+

@@ -1,0 +1,275 @@
+# Copyright (c) 2010, Symantec Corporation
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+#
+# Redistributions of source code must retain the above copyright
+# notice, this list of conditions and the following disclaimer.
+#
+# Redistributions in binary form must reproduce the above copyright
+# notice, this list of conditions and the following disclaimer in
+# the documentation and/or other materials provided with the
+# distribution.
+#
+# Neither the name of Symantec Corporation nor the names of its
+# contributors may be used to endorse or promote products derived
+# from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+# COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+# ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+#
+
+
+#
+#
+# To build in this cross environment the global variable SANDBOX
+# should be set to the top of the hierarchy put together with 'mb'.
+# dotting this xenv will then complete the setup.
+#
+#
+# This will set defaults for all the environment variables that
+# are needed for the build. These can obviously be overriden by setting
+# variables before dotting this xenv.
+#
+# The default values will be:
+#	
+#
+#       <kernel release> = uname -r
+#	KERNSRC=/usr/src/kernels/<kernel release>
+#	KERNSRC_PATH=$KERNSRC
+#	KSRCSIR=/usr/src/linux-obj/arch
+#	KOBJDIR=$KSRCDIR
+#	TARGET_FLAVOURS=`all kernel flavours on this architecture`
+#				for i386 = smp bigsmp default debug
+#	MYLIBPATH=$SANDBOX/uts/vxtcom
+#
+#
+
+export SANDBOX
+
+if [ -f /etc/SuSE-release ]
+then
+	LINUX_PLATFORM="SuSE"
+	LINUX_VERSION=`grep VERSION /etc/SuSE-release | cut -d' ' -f3`
+	UTSRELFILE="version.h"
+else
+	LINUX_PLATFORM="RHEL"
+	if grep -q Tikanga /etc/redhat-release 2>/dev/null; then
+		LINUX_VERSION=5
+		UTSRELFILE="utsrelease.h"
+	else
+		LINUX_VERSION=4
+		UTSRELFILE="version.h"
+	fi
+fi
+
+if [ -z "$KERNSRC_PATH" ]
+then
+	if [ -n "$KERNSRC" ] 
+	then
+		export KERNSRC_PATH=$KERNSRC
+	fi
+fi
+
+# if KERNSRC_PATH set but not KERNSRC, set KERNSRC to first path
+if [ -z "$KERNSRC" ]
+then
+	if [ -n "$KERNSRC_PATH" ] 
+	then
+		export KERNSRC=`echo $KERNSRC_PATH | awk -F: '{print $1}'`
+	fi
+fi
+
+if [ -z "$KERNSRC" ]
+then
+	echo "KERNSRC environment variable not set"
+	ARCH=`uname -m`
+	if [ -f /etc/redhat-release ]
+	then
+		FLAVOUR=` uname -r `
+		export KERNSRC=/usr/src/kernels/$FLAVOUR-$ARCH
+	elif [ -f /etc/SuSE-release ]
+	then
+		FLAVOUR=`uname -r | cut -d - -f 3`
+		MACHINE=`uname -i`
+		export KERNSRC=/usr/src/linux-obj/$MACHINE/$FLAVOUR
+	else
+		echo "Unknown platform"
+		exit 1
+	fi
+	export KERNSRC_PATH=$KERNSRC
+	echo "    setting KERNSRC and KERNSRC_PATH to $KERNSRC"
+fi
+
+if [ -z "$KSRCDIR" ]
+then
+	echo "KSRCDIR environment variable not set"
+	export KSRCDIR=`dirname $KERNSRC`
+	echo "    setting KSRCDIR to $KSRCDIR"
+fi
+
+if [ -z "$KOBJDIR" ]
+then
+	echo "KOBJDIR environment variable not set"
+	export KOBJDIR=$KSRCDIR
+	echo "    setting KOBJDIR to $KOBJDIR"
+fi
+
+if [ -z "$TARGET_FLAVOURS" ]
+then
+	echo "TARGET_FLAVOURS environment variable not set"
+	# Only build for this kernel flavout by default
+	if [ -f /etc/redhat-release ]
+	then
+		TARGET_FLAVOURS=` uname -r | awk '{sub("[0-9.-]*",""); print $0}'`
+	elif [ -f /etc/SuSE-release ]
+	then
+		TARGET_FLAVOURS=`uname -r | cut -d - -f 3`
+	else
+		echo "Unknown platform"
+		exit 1
+	fi
+	export TARGET_FLAVOURS
+	echo "    setting TARGET_FLAVOURS to $TARGET_FLAVOURS"
+fi
+
+if [ -z "$VXVM_TARGET_USER" ]
+then
+	ARCH=`uname -m`
+	if [ "$ARCH" = "ia64" ]
+	then
+		echo "VXVM_TARGET_USER environment variable not set"
+		export VXVM_TARGET_USER=/emul/ia32-linux/usr/bin/
+		echo "    setting VXVM_TARGET_USER to $VXVM_TARGET_USER"
+	fi
+fi
+
+
+if [ -z "$SANDBOX" ]
+then
+	echo "SANDBOX environment variable not set"
+else
+	if [ -z "$MYLIBPATH" ]
+	then
+		echo "MYLIBPATH environment variable not set"
+		export MYLIBPATH=$SANDBOX/vxtcom/lib
+		echo "    setting MYLIBPATH to $MYLIBPATH"
+	fi
+
+	if [ -z "$VXSRCTOP" ]
+	then
+		echo "VXSRCTOP environment variable not set"
+		export VXSRCTOP=$SANDBOX
+		echo "    setting VXSRCTOP to $VXSRCTOP"
+	fi
+
+	if [ -z "$ROOT" ]
+	then
+		echo "ROOT environment variable not set:"
+		echo "    setting default to $SANDBOX"
+		ROOT=$SANDBOX/vxtcom
+		mkdir -p $ROOT
+		cp -r ../../kernel $ROOT
+		cp -r ../../lib $ROOT
+		cp -r ../../public $ROOT
+		cp -r ../../scripts $ROOT
+		cp -r ../../tools $ROOT
+	fi
+	if [ -z "$VXMS_ROOT" ]
+	then
+		if [ -d "$ROOT"/linux_sdk ]
+		then
+			echo "VXMS_ROOT environment variable not set:"
+			echo "\tsetting default to $ROOT/linuxv_sdk"
+			VXMS_ROOT=$ROOT/linux_sdk
+		fi
+	else
+		echo "VXMS_ROOT directory will be $VXMS_ROOT"
+	fi
+
+
+	if [ -z "$INSTROOT" ]
+	then
+		echo "INSTROOT environment variable not set:"
+		echo "    setting default to $ROOT/root.lx"
+		INSTROOT=$ROOT/root.lx
+	else
+		echo "INSTROOT directory will be $INSTROOT"
+	fi
+	[ -d $INSTROOT ] || {
+		echo "    creating $INSTROOT directory"
+		mkdir -p $INSTROOT
+		mkdir -p $INSTROOT/etc/vxtcom
+		mkdir -p $INSTROOT/etc/vxtcom/bin
+		mkdir -p $INSTROOT/usr/lib
+		ARCH=`uname -m`
+		if [ "$ARCH" = "x86_64" ]
+		then
+			echo "Detected 64 bit platform, create lib64"
+			mkdir -p $INSTROOT/usr/lib64
+		fi
+		mkdir -p $INSTROOT/usr/include
+		cp ./modinst-vxt.sh $INSTROOT/etc/vxtcom/modinst-vxt
+		cp ./README.contents $INSTROOT/etc/vxtcom
+	}
+	if [ -z "$LVMINSTROOT" ]
+	then
+		echo "LVMINSTROOT environment variable not set:"
+		echo "    setting default to $ROOT/lvmroot.lx"
+		LVMINSTROOT=$ROOT/lvmroot.lx
+	else
+		echo "LVMINSTROOT directory will be $LVMINSTROOT"
+	fi
+	[ -d $LVMINSTROOT ] || {
+		echo "creating $LVMINSTROOT directory"
+		mkdir -p $LVMINSTROOT
+	}
+	if [ -z "$PKGDEST" ]
+	then
+		PKGDEST=$ROOT/pkgs
+		echo "PKGDEST environment variable not set:"
+		echo "    setting default to $PKGDEST"
+	else
+		echo "PKGDEST directory will be $PKGDEST"
+	fi
+	[ -d $PKGDEST ] || {
+		echo "    creating $PKGDEST directory"
+		mkdir -p $PKGDEST
+	}
+
+
+	RULESDIR=$ROOT/pkg/linux/rules
+	[ -d $RULESDIR ] || {
+		echo "    creating $RULESDIR directory"
+		mkdir -p $RULESDIR
+		cp ./cmd.rulefile $RULESDIR
+		cp ./pkg.rulefile $RULESDIR
+		cp ./rpm.version $ROOT/pkg/linux
+		cp ./pkginfo $ROOT/pkg/linux
+		cp ./Makefile.build $ROOT/pkg/linux/Makefile
+		cp ./VXTcom.spec $ROOT/pkg/linux
+		cp ./VXTcom_dev.spec $ROOT/pkg/linux
+	}
+#	LIBRULES=$RULESDIR/lib.rulefile
+	CMDRULES=$RULESDIR/cmd.rulefile
+	PKGRULES=$RULESDIR/pkg.rulefile
+#	UTSRULES=$RULESDIR/uts.rulefile
+#	VRASRULES=$RULESDIR/vras.rulefile
+
+	export ROOT INSTROOT LVMINSTROOT PKGDEST LIBRULES CMDRULES UTSRULES \
+		VRASRULES VXMS_ROOT VXFI_ROOT LINUX_PLATFORM LINUX_VERSION \
+		PKGRULES UTSRELFILE
+fi

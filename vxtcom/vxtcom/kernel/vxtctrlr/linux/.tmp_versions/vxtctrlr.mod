@@ -1,0 +1,2 @@
+/vxtcom/kernel/vxtctrlr/linux/vxtctrlr.ko
+/vxtcom/kernel/vxtctrlr/linux/../common/vxt_com.o /vxtcom/kernel/vxtctrlr/linux/../../vxtdev/common/vxt_msg_dev.o /vxtcom/kernel/vxtctrlr/linux/../common/vxtcfg_msgs.o /vxtcom/kernel/vxtctrlr/linux/../common/vxt_signal.o /vxtcom/kernel/vxtctrlr/linux/vxt_com_os.o /vxtcom/kernel/vxtctrlr/linux/../common/vxt_trace.o /vxtcom/kernel/vxtctrlr/linux/vxt_module.o

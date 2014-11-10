@@ -1,0 +1,1 @@
+cmd_/vxtcom/kernel/vxtcard/linux/front/vxtcard_front.o := ld -m elf_i386 -m elf_i386  -r -o /vxtcom/kernel/vxtcard/linux/front/vxtcard_front.o /vxtcom/kernel/vxtcard/linux/front/../xen/vxtcom_cntrlr_front.o /vxtcom/kernel/vxtcard/linux/front/../vxt_card.o /vxtcom/kernel/vxtcard/linux/front/../vxt_auth.o

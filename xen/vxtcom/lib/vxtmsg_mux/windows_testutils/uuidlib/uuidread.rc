@@ -1,0 +1,6 @@
+#define BF_FILETYPE         VFT_APP
+#define SZ_FILEDESCRIPTION  "XDC uuidread"
+#define SZ_ORIGINALFILENAME "uuidread.dll"
+#define SZ_INTERNALNAME     "uuidread.dll"
+
+#include <verstamp.inc>

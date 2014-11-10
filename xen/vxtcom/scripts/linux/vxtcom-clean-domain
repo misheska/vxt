@@ -1,0 +1,6 @@
+#!/bin/sh
+
+echo Removing VXT controller from $1
+guest_domain=`echo $1 | awk 'sub("Domain-","")'`
+xenstore-rm /local/domain/0/backend/vxtcom_ctrlr/$guest_domain
+xenstore-rm /local/domain/$guest_domain/device/vxtcom_ctrlr
